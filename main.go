@@ -11,7 +11,7 @@ func main() {
 	query := searchCmd.String("q", "", "Search query")
 
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'search' or '--help' command")
+		fmt.Println("expected a command, type '--help' to see available commands.")
 		os.Exit(1)
 	}
 
@@ -40,7 +40,7 @@ func HandleSearch(searchCmd *flag.FlagSet, query *string) {
 }
 
 func HandleHelp() {
-	fmt.Println("Usage:")
-	fmt.Println("  search -q <query>")
+	fmt.Println("Commands:")
+	fmt.Println("  search -q <search query>")
 	os.Exit(0)
 }
