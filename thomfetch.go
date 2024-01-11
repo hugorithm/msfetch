@@ -15,6 +15,7 @@ func main() {
 		os.Exit(1)
 	}
 
+  
 	switch os.Args[1] {
 	case "search":
 		HandleSearch(searchCmd, query)
