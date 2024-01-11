@@ -1,4 +1,4 @@
-module thomfetch
+module msfetch
 
 go 1.21.6
 
