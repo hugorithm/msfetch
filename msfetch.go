@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+
 	"github.com/gocolly/colly"
 )
 
 type item struct {
-	Name        string
-	Price       string
-  ProductUrl  string
+	Name       string
+	Price      string
+	ProductUrl string
 }
 
 func main() {
@@ -42,23 +43,31 @@ func Scrape(query *string) {
 		colly.AllowedDomains("www.musicstore.com"),
 	)
 
-  var items []item
+	var items []item
 
 	c.OnHTML("div.tile-product", func(h *colly.HTMLElement) {
-    item := item {
-      Name: h.ChildText("div[data-dynamic-block-name=ProductTile-ProductTitle] a span"),
-      Price: h.ChildText(".price-box span"),
-      ProductUrl: h.ChildAttr("div.image-box a", "href"),
-    }
-    
-    items = append(items, item)
+		item := item{
+			Name:       h.ChildText("div[data-dynamic-block-name=ProductTile-ProductTitle] a span"),
+			Price:      h.ChildText(".price-box span"),
+			ProductUrl: h.ChildAttr("div.image-box a", "href"),
+		}
+
+		items = append(items, item)
+	})
+
+	c.OnHTML("div.settings-box-top a[title='to next page']", func(h *colly.HTMLElement) {
+		c.Visit(h.Attr("href"))
+	})
+
+	c.OnRequest(func(r *colly.Request) {
+		fmt.Println(r.URL.String())
 	})
 
 	err := c.Visit(url)
 	if err != nil {
 		fmt.Println("Error during website visit:", err)
 	}
-  fmt.Println(items)
+	fmt.Println(items)
 }
 
 func HandleSearch(searchCmd *flag.FlagSet, query *string) {
