@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-
 	"github.com/gocolly/colly"
 )
 
 type item struct {
 	Name        string
-	Description string
 	Price       string
+  ProductUrl  string
 }
 
 func main() {
@@ -40,19 +39,18 @@ func Scrape(query *string) {
 	url := "https://www.musicstore.com/en_PT/EUR/search?SearchTerm=" + escapedQuery
 
 	c := colly.NewCollector(
-		colly.AllowedDomains("www.thomann.de", "www.musicstore.com"),
+		colly.AllowedDomains("www.musicstore.com"),
 	)
 
   var items []item
 
-	c.OnHTML("div.product", func(h *colly.HTMLElement) {
-    fmt.Println(h.ChildText("span.product__price-primary"))
+	c.OnHTML("div.tile-product", func(h *colly.HTMLElement) {
     item := item {
-      Name: h.ChildText(".title__manufacturer") + h.ChildText(".title__name"),
-      Description: h.ChildText(".product__description-item"),
-      Price: h.ChildText(".product__price-primary"),
+      Name: h.ChildText("div[data-dynamic-block-name=ProductTile-ProductTitle] a span"),
+      Price: h.ChildText(".price-box span"),
+      ProductUrl: h.ChildAttr("div.image-box a", "href"),
     }
-
+    
     items = append(items, item)
 	})
 
