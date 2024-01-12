@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/gocolly/colly"
+	"github.com/olekukonko/tablewriter"
 )
 
 type item struct {
@@ -48,26 +49,35 @@ func Scrape(query *string) {
 	c.OnHTML("div.tile-product", func(h *colly.HTMLElement) {
 		item := item{
 			Name:       h.ChildText("div[data-dynamic-block-name=ProductTile-ProductTitle] a span"),
-			Price:      h.ChildText(".price-box span"),
+			Price:      h.ChildText("span.price-box span.final"),
 			ProductUrl: h.ChildAttr("div.image-box a", "href"),
 		}
 
 		items = append(items, item)
 	})
 
-	c.OnHTML("div.settings-box-top a[title='to next page']", func(h *colly.HTMLElement) {
-		c.Visit(h.Attr("href"))
-	})
-
 	c.OnRequest(func(r *colly.Request) {
-		fmt.Println(r.URL.String())
+		fmt.Println("Scrapping:", r.URL.String(), "\n")
 	})
 
 	err := c.Visit(url)
 	if err != nil {
 		fmt.Println("Error during website visit:", err)
 	}
-	fmt.Println(items)
+
+	printItemList(items)
+}
+
+func printItemList(items []item) {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Name", "Price", "Product URL"})
+	table.SetRowLine(true)
+
+	for _, i := range items {
+		table.Append([]string{i.Name, i.Price, i.ProductUrl})
+	}
+
+	table.Render()
 }
 
 func HandleSearch(searchCmd *flag.FlagSet, query *string) {
