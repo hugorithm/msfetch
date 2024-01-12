@@ -36,7 +36,7 @@ func main() {
 
 func Scrape(query *string) {
 	escapedQuery := url.QueryEscape(*query)
-	url := "https://www.musicstore.com/en_PT/EUR/search?SearchTerm=" + escapedQuery
+	url := "https://www.musicstore.com/en_CH/CHF/search?SearchTerm=" + escapedQuery
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("www.musicstore.com"),
