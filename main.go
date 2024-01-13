@@ -21,7 +21,7 @@ func main() {
 	query := searchCmd.String("q", "", "Search query")
 
 	if len(os.Args) < 2 {
-		fmt.Println("expected a command, type '--help' to see available commands.")
+		fmt.Println("expected a command, type '--help' for commands.")
 		os.Exit(1)
 	}
 
