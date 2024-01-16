@@ -17,23 +17,23 @@ type item struct {
 }
 
 func main() {
-	searchCmd := flag.NewFlagSet("search", flag.ExitOnError)
-	query := searchCmd.String("q", "", "Search query")
+    searchCmd := flag.NewFlagSet("search", flag.ExitOnError)
+    query := searchCmd.String("q", "", "Search query")
 
-	if len(os.Args) < 2 {
-		fmt.Println("expected a command, type '--help' for commands.")
-		os.Exit(1)
-	}
+    if len(os.Args) < 2 {
+        fmt.Println("expected a command, type '--help' for commands.")
+        os.Exit(1)
+    }
 
-	switch os.Args[1] {
-	case "search":
-		HandleSearch(searchCmd, query)
-	case "--help":
-		HandleHelp()
-	default:
-		fmt.Println("unexpected command, type '--help' for commands")
-		os.Exit(1)
-	}
+    switch os.Args[1] {
+    case "search":
+        HandleSearch(searchCmd, query)
+    case "--help":
+        HandleHelp()
+    default:
+        fmt.Println("unexpected command, type '--help' for commands")
+        os.Exit(1)
+    }
 }
 
 func Scrape(query *string) {
@@ -56,9 +56,9 @@ func Scrape(query *string) {
 		items = append(items, item)
 	})
 
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Scrapping:", r.URL.String(), "\n")
-	})
+    c.OnRequest(func(r *colly.Request) {
+        fmt.Println("Scrapping:", r.URL.String() + "\n")
+    })
 
 	err := c.Visit(url)
 	if err != nil {
@@ -69,27 +69,27 @@ func Scrape(query *string) {
 }
 
 func printItemList(items []item) {
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Price", "Product URL"})
-	table.SetRowLine(true)
+    table := tablewriter.NewWriter(os.Stdout)
+    table.SetHeader([]string{"Name", "Price", "Product URL"})
+    table.SetRowLine(true)
 
-	for _, i := range items {
-		table.Append([]string{i.Name, i.Price, i.ProductUrl})
-	}
+    for _, i := range items {
+        table.Append([]string{i.Name, i.Price, i.ProductUrl})
+    }
 
-	table.Render()
+    table.Render()
 }
 
 func HandleSearch(searchCmd *flag.FlagSet, query *string) {
-	searchCmd.Parse(os.Args[2:])
+    searchCmd.Parse(os.Args[2:])
 
-	if *query == "" {
-		fmt.Print("Search query is required\n\n")
-		searchCmd.PrintDefaults()
-		os.Exit(1)
-	}
+    if *query == "" {
+        fmt.Print("Search query is required\n\n")
+        searchCmd.PrintDefaults()
+        os.Exit(1)
+    }
 
-	Scrape(query)
+    Scrape(query)
 }
 
 func HandleHelp() {
