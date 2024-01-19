@@ -18,7 +18,7 @@ type item struct {
 
 func main() {
     searchCmd := flag.NewFlagSet("search", flag.ExitOnError)
-    query := searchCmd.String("q", "", "Search query")
+    query := searchCmd.String("q", "", "-q <search_query>")
 
     if len(os.Args) < 2 {
         fmt.Println("expected a command, type '--help' for commands.")
@@ -34,6 +34,24 @@ func main() {
         fmt.Println("unexpected command, type '--help' for commands")
         os.Exit(1)
     }
+}
+
+func HandleSearch(searchCmd *flag.FlagSet, query *string) {
+    searchCmd.Parse(os.Args[2:])
+
+    if *query == "" {
+        fmt.Print("Search query is required\n\n")
+        searchCmd.PrintDefaults()
+        os.Exit(1)
+    }
+
+    Scrape(query)
+}
+
+func HandleHelp() {
+	fmt.Println("Commands:")
+	fmt.Println("  search -q <search query>")
+	os.Exit(0)
 }
 
 func Scrape(query *string) {
@@ -78,22 +96,4 @@ func printItemList(items []item) {
     }
 
     table.Render()
-}
-
-func HandleSearch(searchCmd *flag.FlagSet, query *string) {
-    searchCmd.Parse(os.Args[2:])
-
-    if *query == "" {
-        fmt.Print("Search query is required\n\n")
-        searchCmd.PrintDefaults()
-        os.Exit(1)
-    }
-
-    Scrape(query)
-}
-
-func HandleHelp() {
-	fmt.Println("Commands:")
-	fmt.Println("  search -q <search query>")
-	os.Exit(0)
 }
