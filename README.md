@@ -28,4 +28,3 @@ The help prints all the possible commands and flags
 ```
 msfetch --help
 ```
-
