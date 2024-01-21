@@ -1,14 +1,14 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"net/url"
-	"os"
+    "flag"
+    "fmt"
+    "net/url"
+    "os"
     "strings"
 
-	"github.com/gocolly/colly"
-	"github.com/olekukonko/tablewriter"
+    "github.com/gocolly/colly"
+    "github.com/olekukonko/tablewriter"
 )
 
 type item struct {
