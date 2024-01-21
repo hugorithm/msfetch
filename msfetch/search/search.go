@@ -42,7 +42,7 @@ func HandleRegion(searchCmd *flag.FlagSet, region *string) string {
     case "pt":
         return "en_PT/EUR/"
     case "uk":
-        return  "en_GB/GBP/"
+        return "en_GB/GBP/"
     case "us":
         return "en_US/USD/"
     case "ch":
@@ -50,7 +50,8 @@ func HandleRegion(searchCmd *flag.FlagSet, region *string) string {
     case "es":
         return "en_ES/EUR/"
     default:
-        fmt.Println("Unexpected regional indicator. Using default \"CH\".")
-        return "en_CH/CHF/"
+        fmt.Println("Unexpected regional indicator.")
+        os.Exit(1)
+        return ""
     }
 }
