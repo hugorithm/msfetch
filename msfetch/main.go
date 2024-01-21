@@ -17,15 +17,13 @@ type item struct {
 	ProductUrl string
 }
 
-var defaultRegion string = "en_CH/CHF/"
-
 func main() {
     searchCmd := flag.NewFlagSet("search", flag.ExitOnError)
     query := searchCmd.String("q", "", "-q <search_query>")
     region := searchCmd.String("re", "", "-re <regional_indicator>")
 
     if len(os.Args) < 2 {
-        fmt.Println("expected a command, type '--help' for commands.")
+        fmt.Println("Expected a command, type '--help' for commands.")
         os.Exit(1)
     }
 
@@ -35,12 +33,14 @@ func main() {
     case "--help":
         HandleHelp()
     default:
-        fmt.Println("unexpected command, type '--help' for commands")
+        fmt.Println("Unexpected command, type '--help' for commands")
         os.Exit(1)
     }
 }
 
 func HandleSearch(searchCmd *flag.FlagSet, query *string, region *string) {
+    var defaultRegion string = "en_CH/CHF/"
+
     searchCmd.Parse(os.Args[2:])
 
     if *query == "" {
@@ -50,13 +50,13 @@ func HandleSearch(searchCmd *flag.FlagSet, query *string, region *string) {
     }
 
     if *region != "" {
-        HandleRegion(searchCmd, region)
+       defaultRegion = HandleRegion(searchCmd, region)
     }
-
-    Scrape(query)
+    
+    Scrape(query, &defaultRegion)
 }
 
-func HandleRegion(searchCmd *flag.FlagSet, region *string) {
+func HandleRegion(searchCmd *flag.FlagSet, region *string) string {
     searchCmd.Parse(os.Args[2:])
 
     if *region == "" {
@@ -67,32 +67,33 @@ func HandleRegion(searchCmd *flag.FlagSet, region *string) {
 
     switch strings.ToLower(*region) {
     case "de":
-        defaultRegion = "en_DE/EUR/"
+        return "en_DE/EUR/"
     case "pt":
-        defaultRegion = "en_PT/EUR/"
+        return "en_PT/EUR/"
     case "uk":
-        defaultRegion = "en_GB/GBP/"
+        return  "en_GB/GBP/"
     case "us":
-        defaultRegion = "en_US/USD/"
+        return "en_US/USD/"
     case "ch":
-        defaultRegion = "en_CH/CHF/"
+        return "en_CH/CHF/"
     case "es":
-        defaultRegion = "en_ES/EUR/"
+        return "en_ES/EUR/"
     default:
-        fmt.Println("unexpected reginal indicator")
-        os.Exit(1)
+        fmt.Println("Unexpected regional indicator. Using default \"CH\".")
+        return "en_CH/CHF/"
     }
 }
 
 func HandleHelp() {
 	fmt.Println("Commands:")
 	fmt.Println("  search -q <search query>")
+	fmt.Println("         -r <regional_indicator>")
 	os.Exit(0)
 }
 
-func Scrape(query *string) {
+func Scrape(query *string, defaultRegion *string) {
 	escapedQuery := url.QueryEscape(*query)
-	url := "https://www.musicstore.com/" + defaultRegion + "search?SearchTerm=" + escapedQuery
+	url := "https://www.musicstore.com/" + *defaultRegion + "search?SearchTerm=" + escapedQuery
 
     c := colly.NewCollector(
 		colly.AllowedDomains("www.musicstore.com", "www.musicstore.de", "www.dv247.com"),
