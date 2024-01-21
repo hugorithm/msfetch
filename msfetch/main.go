@@ -111,6 +111,7 @@ func Scrape(query *string, defaultRegion *string) {
 		items = append(items, item)
 	})
 
+
     c.OnRequest(func(r *colly.Request) {
         fmt.Println("Scrapping:", r.URL.String() + "\n")
     })
@@ -120,6 +121,10 @@ func Scrape(query *string, defaultRegion *string) {
 		fmt.Println("Error during website visit:", err)
 	}
 
+    if len(items) <= 0 {
+        fmt.Println("No resulst were found that match the serach query.")
+        return
+    }
 	printItemList(items)
 }
 
