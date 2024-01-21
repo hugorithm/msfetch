@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+    "strings"
 
 	"github.com/gocolly/colly"
 	"github.com/olekukonko/tablewriter"
@@ -16,9 +17,12 @@ type item struct {
 	ProductUrl string
 }
 
+var defaultRegion string = "en_CH/CHF/"
+
 func main() {
     searchCmd := flag.NewFlagSet("search", flag.ExitOnError)
     query := searchCmd.String("q", "", "-q <search_query>")
+    region := searchCmd.String("re", "", "-re <regional_indicator>")
 
     if len(os.Args) < 2 {
         fmt.Println("expected a command, type '--help' for commands.")
@@ -27,7 +31,7 @@ func main() {
 
     switch os.Args[1] {
     case "search":
-        HandleSearch(searchCmd, query)
+        HandleSearch(searchCmd, query, region)
     case "--help":
         HandleHelp()
     default:
@@ -36,7 +40,7 @@ func main() {
     }
 }
 
-func HandleSearch(searchCmd *flag.FlagSet, query *string) {
+func HandleSearch(searchCmd *flag.FlagSet, query *string, region *string) {
     searchCmd.Parse(os.Args[2:])
 
     if *query == "" {
@@ -45,7 +49,39 @@ func HandleSearch(searchCmd *flag.FlagSet, query *string) {
         os.Exit(1)
     }
 
+    if *region != "" {
+        HandleRegion(searchCmd, region)
+    }
+
     Scrape(query)
+}
+
+func HandleRegion(searchCmd *flag.FlagSet, region *string) {
+    searchCmd.Parse(os.Args[2:])
+
+    if *region == "" {
+        fmt.Print("Regional indicator is required \n\n")
+        searchCmd.PrintDefaults()
+        os.Exit(1)
+    }
+
+    switch strings.ToLower(*region) {
+    case "de":
+        defaultRegion = "en_DE/EUR/"
+    case "pt":
+        defaultRegion = "en_PT/EUR/"
+    case "uk":
+        defaultRegion = "en_GB/GBP/"
+    case "us":
+        defaultRegion = "en_US/USD/"
+    case "ch":
+        defaultRegion = "en_CH/CHF/"
+    case "es":
+        defaultRegion = "en_ES/EUR/"
+    default:
+        fmt.Println("unexpected reginal indicator")
+        os.Exit(1)
+    }
 }
 
 func HandleHelp() {
@@ -56,10 +92,10 @@ func HandleHelp() {
 
 func Scrape(query *string) {
 	escapedQuery := url.QueryEscape(*query)
-	url := "https://www.musicstore.com/en_CH/CHF/search?SearchTerm=" + escapedQuery
+	url := "https://www.musicstore.com/" + defaultRegion + "search?SearchTerm=" + escapedQuery
 
-	c := colly.NewCollector(
-		colly.AllowedDomains("www.musicstore.com"),
+    c := colly.NewCollector(
+		colly.AllowedDomains("www.musicstore.com", "www.musicstore.de", "www.dv247.com"),
 	)
 
 	var items []item
