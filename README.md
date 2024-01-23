@@ -4,14 +4,14 @@ msfetch is a CLI webscraper for www.musicstore.de
 It allows for a product search without leaving the terminal
 
 ![terminal example](./terminal.png)
-
-## Build with Docker
+## Docker
+### Build with Docker
 To build the image with docker use the following command.
 ```
 docker build . -t msfetch
 ```
 
-## Run with Docker
+### Run with Docker
 To run the docker image use the following command.
 ```
 docker run -it msfetch <command_name> <flag> <args>
